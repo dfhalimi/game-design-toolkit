@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level Design Editor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background: #1a202c;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: #2d3748;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #4a5568;
+        }
+
+        .header h1 {
+            color: #f7fafc;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-link {
+            color: #a0aec0;
+            text-decoration: none;
+            font-size: 0.875rem;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .header-link:hover {
+            background: #4a5568;
+            color: #f7fafc;
+        }
+
+        /* Toolbar */
+        .toolbar-container {
+            background: #2d3748;
+            padding: 12px 20px;
+            border-bottom: 1px solid #4a5568;
+        }
+
+        #toolbar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toolbar-separator {
+            width: 1px;
+            height: 32px;
+            background: #4a5568;
+            margin: 0 8px;
+        }
+
+        .toolbar-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: #4a5568;
+            border: none;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .toolbar-btn:hover {
+            background: #718096;
+        }
+
+        .toolbar-btn:active {
+            transform: scale(0.98);
+        }
+
+        .toolbar-btn.active {
+            background: #4299e1;
+            color: white;
+        }
+
+        .toolbar-btn-icon {
+            font-size: 1rem;
+        }
+
+        .toolbar-btn-primary {
+            background: #48bb78;
+        }
+
+        .toolbar-btn-primary:hover {
+            background: #38a169;
+        }
+
+        .toolbar-btn-action {
+            background: #4a5568;
+        }
+
+        .toolbar-label {
+            color: #a0aec0;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .toolbar-select {
+            padding: 8px 12px;
+            background: #4a5568;
+            border: 1px solid #718096;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+
+        .toolbar-select:focus {
+            outline: none;
+            border-color: #4299e1;
+        }
+
+        .toolbar-input {
+            width: 60px;
+            padding: 8px;
+            background: #4a5568;
+            border: 1px solid #718096;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.875rem;
+            text-align: center;
+        }
+
+        .toolbar-input:focus {
+            outline: none;
+            border-color: #4299e1;
+        }
+
+        .toolbar-unit {
+            color: #a0aec0;
+            font-size: 0.75rem;
+        }
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            min-height: 0;
+        }
+
+        /* Editor panels */
+        .editor-panel {
+            display: flex;
+            flex-direction: column;
+            background: #2d3748;
+            overflow: hidden;
+        }
+
+        .editor-panel:first-child {
+            border-right: 1px solid #4a5568;
+        }
+
+        .panel-header {
+            padding: 12px 16px;
+            background: #1a202c;
+            border-bottom: 1px solid #4a5568;
+        }
+
+        .panel-header h2 {
+            color: #e2e8f0;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .panel-content {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 2D Editor Canvas */
+        #editor2dCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
+        /* 3D Preview Container */
+        #preview3dContainer {
+            width: 100%;
+            height: 100%;
+        }
+
+        #preview3dContainer canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Status bar */
+        .status-bar {
+            background: #1a202c;
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid #4a5568;
+        }
+
+        .status-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .status-item {
+            color: #a0aec0;
+            font-size: 0.75rem;
+        }
+
+        .status-item span {
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(26, 32, 44, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e2e8f0;
+            font-size: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 1fr;
+            }
+
+            .editor-panel:first-child {
+                border-right: none;
+                border-bottom: 1px solid #4a5568;
+            }
+        }
+
+        /* Keyboard shortcuts hint */
+        .shortcuts-hint {
+            position: fixed;
+            bottom: 60px;
+            right: 20px;
+            background: #2d3748;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #4a5568;
+            font-size: 0.75rem;
+            color: #a0aec0;
+            display: none;
+        }
+
+        .shortcuts-hint.show {
+            display: block;
+        }
+
+        .shortcuts-hint h4 {
+            color: #e2e8f0;
+            margin-bottom: 8px;
+        }
+
+        .shortcuts-hint kbd {
+            background: #4a5568;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Level Design Editor</h1>
+        <div class="header-actions">
+            <a href="index.html" class="header-link">Color Palette</a>
+        </div>
+    </header>
+
+    <div class="toolbar-container">
+        <div id="toolbar"></div>
+    </div>
+
+    <main class="main-content">
+        <div class="editor-panel">
+            <div class="panel-header">
+                <h2>2D Layout Editor</h2>
+            </div>
+            <div class="panel-content">
+                <canvas id="editor2dCanvas"></canvas>
+            </div>
+        </div>
+
+        <div class="editor-panel">
+            <div class="panel-header">
+                <h2>3D Preview</h2>
+            </div>
+            <div class="panel-content">
+                <div id="preview3dContainer"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="status-bar">
+        <div class="status-info">
+            <div class="status-item">Grid: <span id="statusGrid">20 x 20</span></div>
+            <div class="status-item">Elements: <span id="statusElements">0</span></div>
+            <div class="status-item">Cursor: <span id="statusCursor">-</span></div>
+        </div>
+        <div class="status-info">
+            <div class="status-item">Scroll to zoom | Drag to draw | Click to place</div>
+        </div>
+    </footer>
+
+    <div class="shortcuts-hint" id="shortcutsHint">
+        <h4>Keyboard Shortcuts</h4>
+        <p><kbd>1</kbd> Wall | <kbd>2</kbd> Floor | <kbd>3</kbd> Spawn</p>
+        <p><kbd>4</kbd> Select | <kbd>5</kbd> Erase | <kbd>Del</kbd> Delete</p>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module" src="../build/LevelDesignEditor/index.js"></script>
+</body>
+</html>
