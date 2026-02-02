@@ -6,6 +6,7 @@
 import { EnvironmentPalette, SlotId } from './EnvironmentPalette.js';
 import { ImageProcessor } from './ImageProcessor.js';
 import { ColorConverter } from './ColorConverter.js';
+import { ACCENT_LIGHTNESS, SKY_LIGHTNESS, TERRAIN_SATURATION } from "./PaletteRules.js";
 
 /**
  * Severity levels for harmony issues
@@ -59,10 +60,7 @@ export class HarmonyAnalyzer {
     // Rule thresholds (tuned for flexibility across different moods/styles)
     private static readonly VEGETATION_HUE_RANGE = 80;      // Max degrees between grass and foliage (increased for autumn, etc.)
     private static readonly TERRAIN_HUE_RANGE = 70;         // Max degrees between terrain colors
-    private static readonly TERRAIN_SATURATION_MAX = 60;    // Max saturation for terrain colors (increased)
     private static readonly SKY_WATER_HUE_RANGE = 50;       // Max hue difference between sky and water (increased for flexibility)
-    private static readonly SKY_MIN_LIGHTNESS = 40;         // Minimum lightness for sky (lowered for dusk/mystical)
-    private static readonly ACCENT_MIN_CONTRAST = 2.5;      // Minimum contrast ratio for accent (slightly relaxed)
 
     /**
      * Analyzes a palette and returns issues and suggestions
@@ -235,16 +233,16 @@ export class HarmonyAnalyzer {
         ];
 
         for (const { id, color } of terrainSlots) {
-            if (color.s > this.TERRAIN_SATURATION_MAX) {
+            if (color.s > TERRAIN_SATURATION.max) {
                 issues.push({
                     slot: id,
                     rule: 'terrain_saturation',
-                    message: `${id.charAt(0).toUpperCase() + id.slice(1)} saturation (${Math.round(color.s)}%) is high for terrain (recommended: <${this.TERRAIN_SATURATION_MAX}%)`,
+                    message: `${id.charAt(0).toUpperCase() + id.slice(1)} saturation (${Math.round(color.s)}%) is high for terrain (recommended: <${TERRAIN_SATURATION.max}%)`,
                     severity: 'suggestion'
                 });
 
                 if (!palette.isLocked(id)) {
-                    const targetSat = this.TERRAIN_SATURATION_MAX - 10;
+                    const targetSat = TERRAIN_SATURATION.max - 10;
                     suggestions.push({
                         slot: id,
                         action: 'adjust_saturation',
@@ -325,11 +323,11 @@ export class HarmonyAnalyzer {
     ): void {
         const sky = colors.sky;
 
-        if (sky.l < this.SKY_MIN_LIGHTNESS) {
+        if (sky.l < SKY_LIGHTNESS.min) {
             issues.push({
                 slot: 'sky',
                 rule: 'sky_brightness',
-                message: `Sky lightness (${Math.round(sky.l)}%) is low (recommended: >${this.SKY_MIN_LIGHTNESS}%)`,
+                message: `Sky lightness (${Math.round(sky.l)}%) is low (recommended: >${SKY_LIGHTNESS.min}%)`,
                 severity: 'warning'
             });
 
@@ -379,33 +377,46 @@ export class HarmonyAnalyzer {
         issues: HarmonyIssue[],
         suggestions: HarmonySuggestion[]
     ): void {
-        // Calculate average scene lightness (excluding accent)
-        const sceneSlots: SlotId[] = ['sky', 'grass', 'foliage', 'rock', 'dirt'];
-        const avgLightness = sceneSlots.reduce((sum, id) => sum + colors[id].l, 0) / sceneSlots.length;
+        // Evaluate accent contrast against environment value band (not average)
+        const environmentSlots: SlotId[] = ['grass', 'foliage', 'rock', 'dirt', 'bark'];
+
+        const envLightnessValues = environmentSlots.map(id => colors[id].l);
+        const minEnvL = Math.min(...envLightnessValues);
+        const maxEnvL = Math.max(...envLightnessValues);
 
         const accent = colors.accent;
-        const lightnessDiff = Math.abs(accent.l - avgLightness);
 
-        // Calculate approximate contrast ratio
-        const contrastRatio = this.calculateContrastRatio(accent.l, avgLightness);
+        // How far the accent must escape the environment band to read clearly
+        const MIN_VALUE_ESCAPE = 15;
 
-        if (contrastRatio < this.ACCENT_MIN_CONTRAST) {
+        const escapesBand =
+            accent.l < minEnvL - MIN_VALUE_ESCAPE ||
+            accent.l > maxEnvL + MIN_VALUE_ESCAPE;
+
+        if (!escapesBand) {
             issues.push({
                 slot: 'accent',
                 rule: 'accent_contrast',
-                message: `Accent contrast ratio (${contrastRatio.toFixed(1)}) is low against scene (recommended: >${this.ACCENT_MIN_CONTRAST})`,
+                message: `Accent lightness (${Math.round(accent.l)}%) does not sufficiently separate from environment values (${Math.round(minEnvL)}–${Math.round(maxEnvL)}%)`,
                 severity: 'warning'
             });
 
             if (!palette.isLocked('accent')) {
-                // Suggest moving accent further from average
-                const targetL = avgLightness > 50 ? 25 : 75;
+                const envMid = (minEnvL + maxEnvL) / 2;
+
+                const targetL =
+                    accent.l > envMid
+                        ? minEnvL - MIN_VALUE_ESCAPE
+                        : maxEnvL + MIN_VALUE_ESCAPE;
+
+                const clampedTargetL = Math.max(5, Math.min(95, targetL));
+
                 suggestions.push({
                     slot: 'accent',
                     action: 'adjust_lightness',
-                    value: targetL - accent.l,
-                    description: 'Adjust accent lightness for better contrast',
-                    newColor: this.hslToHex(accent.h, accent.s, targetL)
+                    value: clampedTargetL - accent.l,
+                    description: 'Adjust accent lightness to escape environment value range',
+                    newColor: this.hslToHex(accent.h, accent.s, clampedTargetL)
                 });
             }
         }
@@ -426,6 +437,48 @@ export class HarmonyAnalyzer {
                     value: 50 - accent.s,
                     description: 'Increase accent saturation for more visibility',
                     newColor: this.hslToHex(accent.h, 50, accent.l)
+                });
+            }
+        }
+
+        if (accent.l < ACCENT_LIGHTNESS.min) {
+            issues.push({
+                slot: 'accent',
+                rule: 'accent_too_dark',
+                message: `Accent lightness (${Math.round(accent.l)}%) is very dark and may read as absence or background rather than a highlight`,
+                severity: 'suggestion'
+            });
+
+            if (!palette.isLocked('accent')) {
+                const targetL = ACCENT_LIGHTNESS.min;
+
+                suggestions.push({
+                    slot: 'accent',
+                    action: 'adjust_lightness',
+                    value: targetL - accent.l,
+                    description: 'Raise accent lightness to remain readable as a highlight',
+                    newColor: this.hslToHex(accent.h, accent.s, targetL)
+                });
+            }
+        }
+
+        if (accent.l > ACCENT_LIGHTNESS.max) {
+            issues.push({
+                slot: 'accent',
+                rule: 'accent_too_bright',
+                message: `Accent lightness (${Math.round(accent.l)}%) is very bright and may feel disconnected from the palette`,
+                severity: 'suggestion'
+            });
+
+            if (!palette.isLocked('accent')) {
+                const targetL = ACCENT_LIGHTNESS.max;
+
+                suggestions.push({
+                    slot: 'accent',
+                    action: 'adjust_lightness',
+                    value: targetL - accent.l,
+                    description: 'Lower accent lightness to better integrate with the palette',
+                    newColor: this.hslToHex(accent.h, accent.s, targetL)
                 });
             }
         }

@@ -6,6 +6,7 @@
 import { EnvironmentPalette, SlotId } from './EnvironmentPalette.js';
 import { ImageProcessor } from './ImageProcessor.js';
 import { ColorConverter } from './ColorConverter.js';
+import { ACCENT_LIGHTNESS } from "./PaletteRules.js";
 
 /**
  * Available mood presets for palette generation
@@ -62,7 +63,7 @@ export const STYLE_DEFINITIONS: StyleInfo[] = [
 const STYLE_SATURATION_MULTIPLIERS: Record<ArtStyle, number> = {
     vibrant: 1.0,    // Keep as-is (full saturation)
     realistic: 0.5,  // Halve saturation for muted tones
-    stylized: 0.75   // 75% saturation for balanced look
+    stylized: 0.75   // 75% saturation for a balanced look
 };
 
 /**
@@ -175,11 +176,19 @@ export class PaletteGenerator {
                 continue;
             }
 
-            const [h, s, l] = colors[slotId];
+            let [h, s, l] = colors[slotId];
+
             // Apply style saturation multiplier
             const adjustedS = Math.min(100, s * saturationMultiplier);
+
+            // Enforce shared accent constraints
+            if (slotId === 'accent') {
+                l = this.clampAccentLightness(l);
+            }
+
             const hex = this.hslToHex(h, adjustedS, l);
             palette.setColor(slotId, hex);
+
         }
 
         return palette;
@@ -215,14 +224,27 @@ export class PaletteGenerator {
                 continue;
             }
 
-            const [h, s, l] = derivedColors[slotId];
-            // Apply style saturation multiplier
+            let [h, s, l] = derivedColors[slotId];
+
             const adjustedS = Math.min(100, s * saturationMultiplier);
+
+            // Enforce shared accent constraints
+            if (slotId === 'accent') {
+                l = this.clampAccentLightness(l);
+            }
+
             const hex = this.hslToHex(h, adjustedS, l);
             palette.setColor(slotId, hex);
         }
 
         return palette;
+    }
+
+    private static clampAccentLightness(l: number): number {
+        return Math.max(
+            ACCENT_LIGHTNESS.min,
+            Math.min(ACCENT_LIGHTNESS.max, l)
+        );
     }
 
     /**
