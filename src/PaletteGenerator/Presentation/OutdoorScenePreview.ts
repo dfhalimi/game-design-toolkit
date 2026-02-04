@@ -313,7 +313,7 @@ export class OutdoorScenePreview {
         // Use dodecahedron for organic rock shape
         const geometry = new this.THREE.DodecahedronGeometry(0.6 * scale, 0);
         
-        // Deform vertices for more natural look
+        // Deform vertices for a more natural look
         const positions = geometry.attributes.position;
         for (let i = 0; i < positions.count; i++) {
             const x = positions.getX(i);

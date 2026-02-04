@@ -5,6 +5,8 @@ import { SceneMaterialManager } from './PaletteGenerator/Domain/SceneMaterialMan
 import { ScenePreview } from './PaletteGenerator/Presentation/ScenePreview.js';
 import { EnvironmentPaletteEditor } from './PaletteGenerator/Presentation/EnvironmentPaletteEditor.js';
 import { OutdoorScenePreview } from './PaletteGenerator/Presentation/OutdoorScenePreview.js';
+import { InteriorPaletteEditor } from './PaletteGenerator/Presentation/InteriorPaletteEditor.js';
+import { IndoorScenePreview } from './PaletteGenerator/Presentation/IndoorScenePreview.js';
 
 /**
  * Application entry point
@@ -68,6 +70,79 @@ function init(): void {
                 outdoorScenePreview.resetCamera();
             });
         }
+
+        // Initialize Interior Palette Editor
+        const interiorPaletteEditor = new InteriorPaletteEditor('interiorPaletteEditor');
+        
+        // Wire up "Use for Texture" from interior palette to texture adjuster
+        interiorPaletteEditor.setOnColorSelected((color, slotId) => {
+            textureAdjuster.setTargetColor(color);
+            const targetColorInput = document.getElementById('targetColorInput') as HTMLInputElement;
+            if (targetColorInput) {
+                targetColorInput.value = color;
+            }
+            console.log(`Using ${slotId} color (${color}) for texture adjustment`);
+        });
+
+        // Indoor Scene Preview - lazy initialization (container is hidden initially)
+        let indoorScenePreview: IndoorScenePreview | null = null;
+        let indoorSceneInitialized = false;
+
+        const initIndoorScene = () => {
+            if (!indoorSceneInitialized) {
+                indoorScenePreview = new IndoorScenePreview(
+                    'indoorSceneContainer',
+                    interiorPaletteEditor.getPalette()
+                );
+                indoorSceneInitialized = true;
+            }
+        };
+
+        // Wire up indoor scene export and reset buttons
+        const exportIndoorSceneBtn = document.getElementById('exportIndoorSceneBtn');
+        const resetIndoorCameraBtn = document.getElementById('resetIndoorCameraBtn');
+        
+        if (exportIndoorSceneBtn) {
+            exportIndoorSceneBtn.addEventListener('click', () => {
+                if (indoorScenePreview) {
+                    indoorScenePreview.exportToGLTF(true);
+                }
+            });
+        }
+        
+        if (resetIndoorCameraBtn) {
+            resetIndoorCameraBtn.addEventListener('click', () => {
+                if (indoorScenePreview) {
+                    indoorScenePreview.resetCamera();
+                }
+            });
+        }
+
+        // Tab switching logic for Outdoor/Indoor
+        const sceneTabs = document.querySelectorAll('.scene-tab');
+        const outdoorSection = document.getElementById('outdoorSection');
+        const indoorSection = document.getElementById('indoorSection');
+
+        sceneTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const sceneType = (tab as HTMLElement).dataset.scene;
+                
+                // Update active tab
+                sceneTabs.forEach(t => t.classList.remove('scene-tab-active'));
+                tab.classList.add('scene-tab-active');
+                
+                // Show/hide sections
+                if (sceneType === 'outdoor') {
+                    outdoorSection?.classList.add('scene-section-active');
+                    indoorSection?.classList.remove('scene-section-active');
+                } else if (sceneType === 'indoor') {
+                    outdoorSection?.classList.remove('scene-section-active');
+                    indoorSection?.classList.add('scene-section-active');
+                    // Initialize indoor scene on first switch (when container is visible)
+                    setTimeout(initIndoorScene, 50);
+                }
+            });
+        });
 
         // Initialize 3D preview
         const texture3DPreview = new Texture3DPreview(

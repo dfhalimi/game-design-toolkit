@@ -121,25 +121,16 @@ export class TextureAdjuster {
     }
 
     /**
-     * Draws the original image to the canvas
+     * Draws the original image to the canvas at full resolution.
+     * Display is scaled via CSS (max-width/max-height) for preview.
      */
     private drawOriginalImage(): void {
         if (!this.originalImage) {
             return;
         }
 
-        // Set canvas size to match image
-        const maxWidth = 400;
-        const maxHeight = 400;
-        let width = this.originalImage.width;
-        let height = this.originalImage.height;
-
-        // Scale down if too large
-        if (width > maxWidth || height > maxHeight) {
-            const scale = Math.min(maxWidth / width, maxHeight / height);
-            width = width * scale;
-            height = height * scale;
-        }
+        const width = this.originalImage.width;
+        const height = this.originalImage.height;
 
         this.originalCanvas.width = width;
         this.originalCanvas.height = height;
