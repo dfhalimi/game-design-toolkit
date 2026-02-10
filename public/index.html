@@ -353,6 +353,710 @@
             background: white;
         }
 
+        /* Texture Mode Tabs */
+        .texture-mode-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding: 4px;
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .texture-tab {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: #4a5568;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .texture-tab:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .texture-tab-active {
+            background: white;
+            color: #2d3748;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .texture-mode {
+            display: none;
+        }
+
+        .texture-mode-active {
+            display: block;
+        }
+
+        /* Multi-Region Texture Adjuster Styles */
+        .mr-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: flex-end;
+            margin-bottom: 24px;
+        }
+
+        .mr-control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .mr-control-group label {
+            font-size: 0.875rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .mr-file-input {
+            padding: 8px;
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .mr-file-input:hover {
+            border-color: #4A90E2;
+        }
+
+        .mr-select {
+            padding: 10px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            font-size: 0.875rem;
+            color: #2d3748;
+            cursor: pointer;
+        }
+
+        .mr-select:hover {
+            border-color: #cbd5e0;
+        }
+
+        .mr-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e2e8f0;
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+        }
+
+        .mr-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4A90E2;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .mr-slider::-webkit-slider-thumb:hover {
+            background: #357ABD;
+        }
+
+        .mr-checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: #4a5568;
+            cursor: pointer;
+        }
+
+        .mr-checkbox {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .mr-btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .mr-btn-primary {
+            background: #4A90E2;
+            color: white;
+        }
+
+        .mr-btn-primary:hover {
+            background: #357ABD;
+        }
+
+        .mr-btn-primary:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .mr-btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .mr-btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .mr-btn-secondary:disabled {
+            background: #edf2f7;
+            color: #a0aec0;
+            cursor: not-allowed;
+        }
+
+        .mr-regions-section {
+            margin-bottom: 24px;
+        }
+
+        .mr-section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .mr-section-desc {
+            font-size: 0.85rem;
+            color: #718096;
+            margin-bottom: 16px;
+        }
+
+        .mr-regions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mr-regions-empty {
+            padding: 24px;
+            text-align: center;
+            color: #718096;
+            background: white;
+            border: 2px dashed #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .mr-region-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mr-region-item:hover {
+            border-color: #cbd5e0;
+        }
+
+        .mr-region-selected {
+            border-color: #4A90E2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+        }
+
+        .mr-region-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mr-region-swatch {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            flex-shrink: 0;
+        }
+
+        .mr-region-details {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .mr-region-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .mr-region-percent {
+            font-size: 0.8rem;
+            color: #718096;
+        }
+
+        .mr-region-pick-btn {
+            margin-top: 4px;
+            padding: 4px 8px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            background: #e2e8f0;
+            border: none;
+            border-radius: 4px;
+            color: #4a5568;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mr-region-pick-btn:hover {
+            background: #cbd5e0;
+        }
+
+        .mr-region-pick-btn.mr-picking-active {
+            background: #4A90E2;
+            color: white;
+        }
+
+        .mr-region-target {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mr-region-target label {
+            font-size: 0.85rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .mr-region-color-input {
+            width: 44px;
+            height: 36px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            cursor: pointer;
+            padding: 2px;
+            flex-shrink: 0;
+        }
+
+        .mr-region-hex-input {
+            width: 80px;
+            padding: 6px 8px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #2d3748;
+        }
+
+        .mr-region-hex-input:focus {
+            outline: none;
+            border-color: #4A90E2;
+        }
+
+        .mr-region-clear-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            background: #e2e8f0;
+            color: #4a5568;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .mr-region-clear-btn:hover {
+            background: #cbd5e0;
+        }
+
+        .mr-region-clear-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .mr-preview-section {
+            margin-bottom: 24px;
+        }
+
+        .mr-preview-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .mr-preview-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .mr-preview-item label {
+            font-size: 0.875rem;
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .mr-preview-wide {
+            grid-column: span 2;
+        }
+
+        .mr-canvas {
+            width: 100%;
+            max-height: 300px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: #282828;
+            object-fit: contain;
+        }
+
+        .mr-preview-wide .mr-canvas {
+            max-height: 400px;
+        }
+
+        .mr-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* Color Replacement Adjuster Styles */
+        .cr-upload-section {
+            margin-bottom: 20px;
+        }
+
+        .cr-upload-section label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #4a5568;
+            margin-bottom: 8px;
+        }
+
+        .cr-file-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .cr-file-input:hover {
+            border-color: #4A90E2;
+        }
+
+        .cr-main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .cr-image-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .cr-canvas-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .cr-canvas-container label {
+            font-size: 0.875rem;
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .cr-canvas {
+            width: 100%;
+            height: 200px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: #1e1e1e;
+            object-fit: contain;
+            cursor: default;
+        }
+
+        .cr-canvas-large {
+            height: 300px;
+        }
+
+        .cr-replacements-section {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .cr-replacements-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .cr-replacements-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin: 0;
+        }
+
+        .cr-help-text {
+            font-size: 0.85rem;
+            color: #718096;
+            margin-bottom: 16px;
+        }
+
+        .cr-btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cr-btn-primary {
+            background: #4A90E2;
+            color: white;
+        }
+
+        .cr-btn-primary:hover {
+            background: #357ABD;
+        }
+
+        .cr-btn-primary:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .cr-replacements-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .cr-empty {
+            padding: 24px;
+            text-align: center;
+            color: #718096;
+            background: #f7fafc;
+            border: 2px dashed #e2e8f0;
+            border-radius: 8px;
+        }
+
+        .cr-replacement-item {
+            padding: 16px;
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cr-replacement-item:hover {
+            border-color: #cbd5e0;
+        }
+
+        .cr-replacement-item.cr-active {
+            border-color: #4A90E2;
+            background: #f0f7ff;
+        }
+
+        .cr-replacement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .cr-replacement-title {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .cr-remove-btn {
+            width: 24px;
+            height: 24px;
+            border: none;
+            border-radius: 4px;
+            background: #e2e8f0;
+            color: #4a5568;
+            cursor: pointer;
+            font-size: 1rem;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cr-remove-btn:hover {
+            background: #fc8181;
+            color: white;
+        }
+
+        .cr-replacement-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .cr-color-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .cr-color-group label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #718096;
+            text-transform: uppercase;
+        }
+
+        .cr-color-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cr-swatch {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .cr-hex {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.8rem;
+            color: #4a5568;
+        }
+
+        .cr-resample-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            background: #e2e8f0;
+            color: #4a5568;
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+
+        .cr-resample-btn:hover {
+            background: #cbd5e0;
+        }
+
+        .cr-arrow {
+            font-size: 1.5rem;
+            color: #a0aec0;
+            padding-top: 20px;
+        }
+
+        .cr-target-inputs {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .cr-target-color {
+            width: 40px;
+            height: 36px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            cursor: pointer;
+            padding: 2px;
+        }
+
+        .cr-target-hex {
+            width: 80px;
+            padding: 8px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .cr-target-hex:focus {
+            outline: none;
+            border-color: #4A90E2;
+        }
+
+        .cr-tolerance-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .cr-tolerance-row label {
+            font-size: 0.8rem;
+            color: #4a5568;
+        }
+
+        .cr-tolerance-value {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .cr-tolerance-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e2e8f0;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .cr-tolerance-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #4A90E2;
+            cursor: pointer;
+        }
+
+        .cr-result-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .cr-result-section label {
+            font-size: 0.875rem;
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .cr-actions {
+            display: flex;
+            gap: 12px;
+        }
+
         .texture-3d-preview {
             padding: 30px;
             background: #f7fafc;
@@ -1711,31 +2415,45 @@
             <p style="color: #718096; margin-bottom: 20px; font-size: 0.9rem;">
                 Upload a texture and match it to your color palette using HSL adjustment
             </p>
-            
-            <div class="texture-controls">
-                <div class="texture-control-group">
-                    <label for="textureFileInput">Upload Texture</label>
-                    <input type="file" id="textureFileInput" class="texture-file-input" accept="image/*">
-                </div>
-                
-                <div class="texture-control-group">
-                    <label for="targetColorInput">Target Color (from palette)</label>
-                    <input type="color" id="targetColorInput" class="texture-color-input" value="#000000">
-                </div>
-                
-                <button id="applyAdjustmentButton" class="texture-button" disabled>Apply Adjustment</button>
-                <button id="downloadAdjustedButton" class="texture-button" disabled>Download Adjusted Texture</button>
+
+            <!-- Texture Mode Tabs -->
+            <div class="texture-mode-tabs">
+                <button class="texture-tab texture-tab-active" data-mode="simple">Simple</button>
+                <button class="texture-tab" data-mode="color-replace">Color Replace</button>
             </div>
 
-            <div class="texture-preview">
-                <div class="texture-preview-item">
-                    <label>Original</label>
-                    <canvas id="originalCanvas" class="texture-canvas"></canvas>
+            <!-- Simple Mode (existing) -->
+            <div id="simpleTextureMode" class="texture-mode texture-mode-active">
+                <div class="texture-controls">
+                    <div class="texture-control-group">
+                        <label for="textureFileInput">Upload Texture</label>
+                        <input type="file" id="textureFileInput" class="texture-file-input" accept="image/*">
+                    </div>
+                    
+                    <div class="texture-control-group">
+                        <label for="targetColorInput">Target Color (from palette)</label>
+                        <input type="color" id="targetColorInput" class="texture-color-input" value="#000000">
+                    </div>
+                    
+                    <button id="applyAdjustmentButton" class="texture-button" disabled>Apply Adjustment</button>
+                    <button id="downloadAdjustedButton" class="texture-button" disabled>Download Adjusted Texture</button>
                 </div>
-                <div class="texture-preview-item">
-                    <label>Adjusted</label>
-                    <canvas id="adjustedCanvas" class="texture-canvas"></canvas>
+
+                <div class="texture-preview">
+                    <div class="texture-preview-item">
+                        <label>Original</label>
+                        <canvas id="originalCanvas" class="texture-canvas"></canvas>
+                    </div>
+                    <div class="texture-preview-item">
+                        <label>Adjusted</label>
+                        <canvas id="adjustedCanvas" class="texture-canvas"></canvas>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Color Replace Mode -->
+            <div id="colorReplaceMode" class="texture-mode">
+                <div id="colorReplaceContainer"></div>
             </div>
         </div>
 

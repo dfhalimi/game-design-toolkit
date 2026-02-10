@@ -1,5 +1,6 @@
 import { ColorWheel } from './PaletteGenerator/Presentation/ColorWheel.js';
 import { TextureAdjuster } from './PaletteGenerator/Presentation/TextureAdjuster.js';
+import { ColorReplacementAdjuster } from './PaletteGenerator/Presentation/ColorReplacementAdjuster.js';
 import { Texture3DPreview } from './PaletteGenerator/Presentation/Texture3DPreview.js';
 import { SceneMaterialManager } from './PaletteGenerator/Domain/SceneMaterialManager.js';
 import { ScenePreview } from './PaletteGenerator/Presentation/ScenePreview.js';
@@ -25,7 +26,7 @@ function init(): void {
             });
         }
 
-        // Initialize texture adjuster
+        // Initialize texture adjuster (simple mode)
         const textureAdjuster = new TextureAdjuster(
             'originalCanvas',
             'adjustedCanvas',
@@ -35,16 +36,53 @@ function init(): void {
             'downloadAdjustedButton'
         );
 
+        // Initialize color replacement texture adjuster
+        const colorReplaceAdjuster = new ColorReplacementAdjuster('colorReplaceContainer');
+
+        // Track current texture mode for palette integration
+        let currentTextureMode: 'simple' | 'color-replace' = 'simple';
+
+        // Texture mode tab switching
+        const textureTabs = document.querySelectorAll('.texture-tab');
+        const simpleTextureMode = document.getElementById('simpleTextureMode');
+        const colorReplaceMode = document.getElementById('colorReplaceMode');
+
+        textureTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const mode = (tab as HTMLElement).dataset.mode;
+                
+                // Update active tab
+                textureTabs.forEach(t => t.classList.remove('texture-tab-active'));
+                tab.classList.add('texture-tab-active');
+                
+                // Show/hide modes
+                if (mode === 'simple') {
+                    simpleTextureMode?.classList.add('texture-mode-active');
+                    colorReplaceMode?.classList.remove('texture-mode-active');
+                    currentTextureMode = 'simple';
+                } else if (mode === 'color-replace') {
+                    simpleTextureMode?.classList.remove('texture-mode-active');
+                    colorReplaceMode?.classList.add('texture-mode-active');
+                    currentTextureMode = 'color-replace';
+                }
+            });
+        });
+
         // Initialize Environment Palette Editor
         const environmentPaletteEditor = new EnvironmentPaletteEditor('environmentPaletteEditor');
         
         // Wire up "Use for Texture" from environment palette to texture adjuster
         environmentPaletteEditor.setOnColorSelected((color, slotId) => {
-            textureAdjuster.setTargetColor(color);
-            // Also update the target color input visually
-            const targetColorInput = document.getElementById('targetColorInput') as HTMLInputElement;
-            if (targetColorInput) {
-                targetColorInput.value = color;
+            if (currentTextureMode === 'simple') {
+                textureAdjuster.setTargetColor(color);
+                // Also update the target color input visually
+                const targetColorInput = document.getElementById('targetColorInput') as HTMLInputElement;
+                if (targetColorInput) {
+                    targetColorInput.value = color;
+                }
+            } else {
+                // In color replace mode, set target for the active replacement
+                colorReplaceAdjuster.setTargetColorForActive(color);
             }
             console.log(`Using ${slotId} color (${color}) for texture adjustment`);
         });
@@ -76,10 +114,15 @@ function init(): void {
         
         // Wire up "Use for Texture" from interior palette to texture adjuster
         interiorPaletteEditor.setOnColorSelected((color, slotId) => {
-            textureAdjuster.setTargetColor(color);
-            const targetColorInput = document.getElementById('targetColorInput') as HTMLInputElement;
-            if (targetColorInput) {
-                targetColorInput.value = color;
+            if (currentTextureMode === 'simple') {
+                textureAdjuster.setTargetColor(color);
+                const targetColorInput = document.getElementById('targetColorInput') as HTMLInputElement;
+                if (targetColorInput) {
+                    targetColorInput.value = color;
+                }
+            } else {
+                // In color replace mode, set target for the active replacement
+                colorReplaceAdjuster.setTargetColorForActive(color);
             }
             console.log(`Using ${slotId} color (${color}) for texture adjustment`);
         });
@@ -150,8 +193,12 @@ function init(): void {
             'modelSelector'
         );
 
-        // Wire up texture adjuster to 3D preview
+        // Wire up texture adjusters to 3D preview
         textureAdjuster.setOnTextureUpdated((canvas) => {
+            texture3DPreview.updateTexture(canvas);
+        });
+
+        colorReplaceAdjuster.setOnTextureUpdated((canvas) => {
             texture3DPreview.updateTexture(canvas);
         });
 
@@ -209,7 +256,11 @@ function init(): void {
             
             if (slotId) {
                 btn.addEventListener('click', () => {
-                    const adjustedCanvas = textureAdjuster.getAdjustedCanvas();
+                    // Get adjusted canvas from the currently active mode
+                    const adjustedCanvas = currentTextureMode === 'simple'
+                        ? textureAdjuster.getAdjustedCanvas()
+                        : colorReplaceAdjuster.getResultCanvas();
+                    
                     if (adjustedCanvas && adjustedCanvas.width > 0 && adjustedCanvas.height > 0) {
                         // Create a copy of the canvas
                         const canvasCopy = document.createElement('canvas');
